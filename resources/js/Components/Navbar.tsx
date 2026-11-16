@@ -1,0 +1,41 @@
+import { Link, usePage } from "@inertiajs/react";
+import { PageProps } from "@/types";
+
+export default function Navbar() {
+    const { auth } = usePage<PageProps>().props;
+
+    return (
+        <div className="navbar bg-base-100 shadow-sm">
+            <div className="navbar-start">
+                <Link href="/" className="btn btn-ghost text-xl">
+                    Larastore
+                </Link>
+            </div>
+
+            <div className="navbar-end gap-2">
+                {auth.user ? (
+                    <>
+                        <span className="text-sm">{auth.user.name}</span>
+                        <Link
+                            href={route("logout")}
+                            method="post"
+                            as="button"
+                            className="btn btn-sm"
+                        >
+                            Logout
+                        </Link>
+                    </>
+                ) : (
+                    <>
+                        <Link href={route("login")} className="btn btn-ghost btn-sm">
+                            Login
+                        </Link>
+                        <Link href={route("register")} className="btn btn-primary btn-sm">
+                            Register
+                        </Link>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}
