@@ -13,6 +13,12 @@ export default function Navbar() {
             </div>
 
             <div className="navbar-end gap-2">
+                {auth.roles.includes("admin") && (
+                    <Link href="/admin" className="btn btn-ghost btn-sm">
+                        Admin
+                    </Link>
+                )}
+
                 {auth.user ? (
                     <>
                         <span className="text-sm">{auth.user.name}</span>
