@@ -16,7 +16,7 @@ class StoreProduct
 
         $product = Product::create($data);
 
-        app(AttachProductImages::class)->handle($product, $images);
+        app(SyncProductImages::class)->handle($product, $images);
 
         return $product;
     }

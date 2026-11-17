@@ -20,6 +20,13 @@ class EditProduct extends EditRecord
         ];
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['images'] = $this->record->images->pluck('path')->all();
+
+        return $data;
+    }
+
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         assert($record instanceof Product);
