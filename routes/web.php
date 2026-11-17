@@ -37,6 +37,7 @@ Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.u
 Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
 
 Route::middleware('auth')->post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::middleware('auth')->get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 
 //Route::middleware(['auth', 'role:admin'])->get('/admin-check', fn () => 'Welcome, admin');
 

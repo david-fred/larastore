@@ -100,17 +100,16 @@ export default function Login({
                         </Link>
                     )}
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
-
                     <p className="mt-4 text-center text-sm">
                         Don't have an account?{" "}
-                        <Link href={route("register")} className="link link-primary">
+                        <Link href={route("register")} className="link link-primary underline">
                             Register
                         </Link>
                     </p>
 
+                    <PrimaryButton className="ms-4" disabled={processing}>
+                        Log in
+                    </PrimaryButton>
                 </div>
             </form>
         </GuestLayout>
