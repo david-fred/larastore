@@ -7,6 +7,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\FileUpload;
 
 class ProductForm
 {
@@ -40,8 +41,18 @@ class ProductForm
                     ->minValue(0)
                     ->default(0),
                 Toggle::make('active')
-                ->default(true)
+                ->default(true),
                    // ->required(),
+                FileUpload::make('images')
+                    ->label('Product images')
+                    ->image()
+                    ->multiple()
+                    ->reorderable()
+                    ->maxFiles(6)
+                    ->disk('public')
+                    ->directory('products')
+                    ->visibility('public')
+                    ->columnSpanFull(),
             ]);
     }
 }
