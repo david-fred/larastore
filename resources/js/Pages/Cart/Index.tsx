@@ -1,5 +1,6 @@
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import MainLayout from "@/Layouts/MainLayout";
+import { PageProps } from "@/types";
 
 type CartItem = {
     id: number;
@@ -13,6 +14,7 @@ type CartItem = {
 };
 
 export default function Index({ items, subtotal }: { items: CartItem[]; subtotal: number }) {
+    const { errors } = usePage<PageProps & { errors: Record<string, string> }>().props;
     const changeQuantity = (item: CartItem, quantity: number) => {
         router.patch(route("cart.update", item.id), { quantity }, { preserveScroll: true });
     };
@@ -106,8 +108,15 @@ export default function Index({ items, subtotal }: { items: CartItem[]; subtotal
                                 <span>Subtotal</span>
                                 <span className="font-semibold">${subtotal.toFixed(2)}</span>
                             </div>
-                            <button type="button" className="btn btn-primary mt-4" disabled>
-                                Checkout (next chapter)
+
+                            {errors.cart && <p className="text-sm text-error">{errors.cart}</p>}
+
+                            <button
+                                type="button"
+                                className="btn btn-primary mt-4"
+                                onClick={() => router.post(route("checkout.store"))}
+                            >
+                                Checkout
                             </button>
                         </div>
                     </div>
