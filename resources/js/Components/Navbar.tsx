@@ -10,6 +10,9 @@ export default function Navbar() {
                 <Link href="/" className="btn btn-ghost text-xl">
                     Larastore
                 </Link>
+                <Link href={route("products.index")} className="btn btn-ghost btn-sm">
+                    Shop
+                </Link>
             </div>
 
             <div className="navbar-end gap-2">
