@@ -17,9 +17,9 @@ export default function Navbar() {
 
             <div className="navbar-end gap-2">
                 {auth.roles.includes("admin") && (
-                    <Link href="/admin" className="btn btn-ghost btn-sm">
+                    <a href="/admin" className="btn btn-ghost btn-sm">
                         Admin
-                    </Link>
+                    </a>
                 )}
 
                 {auth.user ? (
