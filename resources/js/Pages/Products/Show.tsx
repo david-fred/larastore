@@ -1,6 +1,7 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import MainLayout from "@/Layouts/MainLayout";
+import { PageProps } from "@/types";
 
 type ProductDetail = {
     id: number;
@@ -17,6 +18,7 @@ export default function Show({ product }: { product: ProductDetail }) {
     const [selected, setSelected] = useState(0);
     const mainImage = product.images[selected] ?? null;
     const inStock = product.quantity > 0;
+    const { errors } = usePage<PageProps & { errors: Record<string, string> }>().props;
 
     return (
         <MainLayout>
@@ -83,12 +85,16 @@ export default function Show({ product }: { product: ProductDetail }) {
                         {product.description ?? "No description yet."}
                     </p>
 
-                    <button type="button" className="btn btn-primary" disabled={!inStock}>
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        disabled={!inStock}
+                        onClick={() => router.post(route("cart.store"), { slug: product.slug, quantity: 1 })}
+                    >
                         Add to cart
                     </button>
-                    <p className="text-xs text-base-content/50">
-                        The cart is the next chapter, so this button doesn't do anything yet.
-                    </p>
+
+                    {errors.quantity && <p className="text-sm text-error">{errors.quantity}</p>}
                 </div>
             </div>
         </MainLayout>
