@@ -27,6 +27,11 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('Larastore')
+            ->renderHook(
+                'panels::head.end',
+                fn (): string => '<title>Larastore Admin</title>',
+            )
             ->login()
             ->colors([
                 'primary' => Color::Amber,
