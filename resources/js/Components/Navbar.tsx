@@ -2,7 +2,7 @@ import { Link, usePage } from "@inertiajs/react";
 import { PageProps } from "@/types";
 
 export default function Navbar() {
-    const { auth } = usePage<PageProps>().props;
+    const { auth, cartCount } = usePage<PageProps>().props;
 
     return (
         <div className="navbar bg-base-100 shadow-sm">
@@ -16,6 +16,10 @@ export default function Navbar() {
             </div>
 
             <div className="navbar-end gap-2">
+                <Link href={route("cart.index")} className="btn btn-ghost btn-sm">
+                    Cart ({cartCount})
+                </Link>
+
                 {auth.roles.includes("admin") && (
                     <a href="/admin" className="btn btn-ghost btn-sm">
                         Admin
