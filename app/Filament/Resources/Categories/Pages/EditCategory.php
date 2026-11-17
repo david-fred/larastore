@@ -23,6 +23,10 @@ class EditCategory extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         assert($record instanceof Category);
-        return app(UpdateCategory::class)->handle($record, $data);
+
+        /** @var UpdateCategory $action */
+        $action = app(UpdateCategory::class);
+
+        return $action->handle($record, $data);
     }
 }

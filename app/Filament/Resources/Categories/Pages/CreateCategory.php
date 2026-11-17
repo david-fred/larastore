@@ -13,6 +13,10 @@ class CreateCategory extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        return app(StoreCategory::class)->handle($data);
+
+        /** @var StoreCategory $action */
+        $action = app(StoreCategory::class);
+
+        return $action->handle($data);
     }
 }
