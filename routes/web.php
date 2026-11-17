@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
 //Route::middleware(['auth', 'role:admin'])->get('/admin-check', fn () => 'Welcome, admin');
 

@@ -27,7 +27,11 @@ export default function Index({ products }: { products: PaginatedProducts }) {
             ) : (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {products.data.map((product) => (
-                        <div key={product.id} className="card bg-base-100 shadow-sm">
+                        <Link
+                            key={product.id}
+                            href={route("products.show", product.slug)}
+                            className="card bg-base-100 shadow-sm transition hover:shadow-md"
+                        >
                             <figure className="aspect-square bg-base-200">
                                 {product.image ? (
                                     <img
@@ -46,7 +50,7 @@ export default function Index({ products }: { products: PaginatedProducts }) {
                                 <h2 className="card-title">{product.title}</h2>
                                 <p className="text-lg font-semibold">${product.price}</p>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             )}
