@@ -50,4 +50,9 @@ class EditProduct extends EditRecord
         return $action->handle($record, $data);
     }
 
+    protected function getRedirectUrl(): ?string
+    {
+        return static::getResource()::getUrl('edit', ['record' => $this->record]);
+    }
+
 }
