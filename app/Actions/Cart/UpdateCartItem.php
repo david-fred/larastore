@@ -2,29 +2,29 @@
 
 namespace App\Actions\Cart;
 
-use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Validation\ValidationException;
 
 class UpdateCartItem
 {
-    public function handle(Product $product, int $quantity): void
+    public function handle(ProductVariant $variant, int $quantity): void
     {
         $cart = session('cart', []);
 
         if ($quantity === 0) {
-            unset($cart[$product->id]);
+            unset($cart[$variant->id]);
             session(['cart' => $cart]);
 
             return;
         }
 
-        if ($quantity > $product->quantity) {
+        if ($quantity > $variant->quantity) {
             throw ValidationException::withMessages([
-                'quantity' => "Only {$product->quantity} of {$product->title} are in stock.",
+                'quantity' => "Only {$variant->quantity} of {$variant->display_name} are in stock.",
             ]);
         }
 
-        $cart[$product->id] = $quantity;
+        $cart[$variant->id] = $quantity;
 
         session(['cart' => $cart]);
     }

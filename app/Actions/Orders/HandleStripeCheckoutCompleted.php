@@ -3,7 +3,7 @@
 namespace App\Actions\Orders;
 
 use App\Models\Order;
-use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
 
 class HandleStripeCheckoutCompleted
@@ -27,10 +27,14 @@ class HandleStripeCheckoutCompleted
             $order->update(['status' => 'paid']);
 
             foreach ($order->items as $item) {
-                $product = Product::whereKey($item->product_id)->lockForUpdate()->first();
+                if (! $item->product_variant_id) {
+                    continue;
+                }
 
-                if ($product) {
-                    $product->decrement('quantity', min($item->quantity, $product->quantity));
+                $variant = ProductVariant::whereKey($item->product_variant_id)->lockForUpdate()->first();
+
+                if ($variant) {
+                    $variant->decrement('quantity', min($item->quantity, $variant->quantity));
                 }
             }
         });

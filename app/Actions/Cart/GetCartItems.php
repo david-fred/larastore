@@ -2,7 +2,7 @@
 
 namespace App\Actions\Cart;
 
-use App\Models\Product;
+use App\Models\ProductVariant;
 
 class GetCartItems
 {
@@ -14,26 +14,30 @@ class GetCartItems
             return ['items' => [], 'subtotal' => 0];
         }
 
-        $items = Product::whereIn('id', array_keys($cart))
-            ->where('active', true)
-            ->with('images')
-            ->get()
-            ->map(function (Product $product) use ($cart) {
-                $quantity = $cart[$product->id];
-                $price = (float) $product->price;
+        $variants = ProductVariant::whereIn('id', array_keys($cart))
+            ->whereHas('product', fn ($query) => $query->where('active', true))
+            ->with(['product.images', 'options.type'])
+            ->get();
 
-                return [
-                    'id' => $product->id,
-                    'title' => $product->title,
-                    'slug' => $product->slug,
-                    'price' => $price,
-                    'quantity' => $quantity,
-                    'stock' => $product->quantity,
-                    'image' => $product->images->first()?->url(),
-                    'line_total' => round($price * $quantity, 2),
-                ];
-            })
-            ->values();
+        // Drop entries for variants that were deleted or whose product is inactive
+        session(['cart' => array_intersect_key($cart, $variants->pluck('id')->flip()->all())]);
+
+        $items = $variants->map(function (ProductVariant $variant) use ($cart) {
+            $quantity = $cart[$variant->id];
+            $price = (float) $variant->price;
+
+            return [
+                'variant_id' => $variant->id,
+                'product_slug' => $variant->product->slug,
+                'title' => $variant->product->title,
+                'label' => $variant->label,
+                'price' => $price,
+                'quantity' => $quantity,
+                'stock' => $variant->quantity,
+                'image' => $variant->product->images->first()?->url(),
+                'line_total' => round($price * $quantity, 2),
+            ];
+        })->values();
 
         return [
             'items' => $items,

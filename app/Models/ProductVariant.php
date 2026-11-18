@@ -44,4 +44,13 @@ class ProductVariant extends Model
 
         return $label !== '' ? $label : 'Default';
     }
+
+    public function getDisplayNameAttribute(): string
+    {
+        $this->loadMissing('product');
+
+        return $this->label === 'Default'
+            ? $this->product->title
+            : "{$this->product->title} ({$this->label})";
+    }
 }

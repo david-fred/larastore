@@ -6,8 +6,8 @@ use App\Actions\Cart\AddToCart;
 use App\Actions\Cart\GetCartItems;
 use App\Actions\Cart\RemoveFromCart;
 use App\Actions\Cart\UpdateCartItem;
-use App\Actions\Products\FindActiveProductBySlug;
-use App\Models\Product;
+use App\Actions\Products\FindActiveVariant;
+use App\Models\ProductVariant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,34 +20,34 @@ class CartController extends Controller
         return Inertia::render('Cart/Index', $getCartItems->handle());
     }
 
-    public function store(Request $request, FindActiveProductBySlug $findProduct, AddToCart $addToCart): RedirectResponse
+    public function store(Request $request, FindActiveVariant $findVariant, AddToCart $addToCart): RedirectResponse
     {
         $validated = $request->validate([
-            'slug' => ['required', 'string'],
+            'variant_id' => ['required', 'integer'],
             'quantity' => ['nullable', 'integer', 'min:1'],
         ]);
 
-        $product = $findProduct->handle($validated['slug']);
+        $variant = $findVariant->handle($validated['variant_id']);
 
-        $addToCart->handle($product, $validated['quantity'] ?? 1);
+        $addToCart->handle($variant, $validated['quantity'] ?? 1);
 
         return back();
     }
 
-    public function update(Request $request, Product $product, UpdateCartItem $updateCartItem): RedirectResponse
+    public function update(Request $request, ProductVariant $variant, UpdateCartItem $updateCartItem): RedirectResponse
     {
         $validated = $request->validate([
             'quantity' => ['required', 'integer', 'min:0'],
         ]);
 
-        $updateCartItem->handle($product, $validated['quantity']);
+        $updateCartItem->handle($variant, $validated['quantity']);
 
         return back();
     }
 
-    public function destroy(Product $product, RemoveFromCart $removeFromCart): RedirectResponse
+    public function destroy(ProductVariant $variant, RemoveFromCart $removeFromCart): RedirectResponse
     {
-        $removeFromCart->handle($product->id);
+        $removeFromCart->handle($variant->id);
 
         return back();
     }

@@ -16,16 +16,22 @@ class CreateStripeCheckout
         $stripe = new StripeClient(config('services.stripe.secret'));
 
         $lineItems = $order->items
-            ->map(fn (OrderItem $item) => [
-                'quantity' => $item->quantity,
-                'price_data' => [
-                    'currency' => 'usd',
-                    'unit_amount' => (int) round((float) $item->price * 100),
-                    'product_data' => [
-                        'name' => $item->title,
+            ->map(function (OrderItem $item) {
+                $name = $item->variant_label && $item->variant_label !== 'Default'
+                    ? "{$item->title} ({$item->variant_label})"
+                    : $item->title;
+
+                return [
+                    'quantity' => $item->quantity,
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'unit_amount' => (int) round((float) $item->price * 100),
+                        'product_data' => [
+                            'name' => $name,
+                        ],
                     ],
-                ],
-            ])
+                ];
+            })
             ->values()
             ->all();
 

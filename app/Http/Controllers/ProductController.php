@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Actions\Products\ListActiveProducts;
 use App\Actions\Products\FindActiveProductBySlug;
+use App\Actions\Products\ListActiveProducts;
 use App\Models\Product;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -38,9 +37,23 @@ class ProductController extends Controller
                 'slug' => $product->slug,
                 'description' => $product->description,
                 'price' => $product->price,
-                'quantity' => $product->quantity,
                 'category' => $product->category->name,
                 'images' => $product->images->map(fn ($image) => $image->url())->all(),
+                'variationTypes' => $product->variationTypes->map(fn ($type) => [
+                    'id' => $type->id,
+                    'name' => $type->name,
+                    'options' => $type->options->map(fn ($option) => [
+                        'id' => $option->id,
+                        'name' => $option->name,
+                    ])->values(),
+                ])->values(),
+                'variants' => $product->variants->map(fn ($variant) => [
+                    'id' => $variant->id,
+                    'label' => $variant->label,
+                    'price' => $variant->price,
+                    'quantity' => $variant->quantity,
+                    'option_ids' => $variant->options->pluck('id')->all(),
+                ])->values(),
             ],
         ]);
     }

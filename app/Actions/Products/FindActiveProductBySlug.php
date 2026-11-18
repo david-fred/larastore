@@ -10,7 +10,7 @@ class FindActiveProductBySlug
     {
         return Product::where('slug', $slug)
             ->where('active', true)
-            ->with(['images', 'category'])
+            ->with(['images', 'category', 'variationTypes.options', 'variants.options.type'])
             ->firstOrFail();
     }
 }

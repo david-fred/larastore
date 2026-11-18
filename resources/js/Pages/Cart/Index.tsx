@@ -3,9 +3,10 @@ import MainLayout from "@/Layouts/MainLayout";
 import { PageProps } from "@/types";
 
 type CartItem = {
-    id: number;
+    variant_id: number;
+    product_slug: string;
     title: string;
-    slug: string;
+    label: string;
     price: number;
     quantity: number;
     stock: number;
@@ -15,12 +16,13 @@ type CartItem = {
 
 export default function Index({ items, subtotal }: { items: CartItem[]; subtotal: number }) {
     const { errors } = usePage<PageProps & { errors: Record<string, string> }>().props;
+
     const changeQuantity = (item: CartItem, quantity: number) => {
-        router.patch(route("cart.update", item.id), { quantity }, { preserveScroll: true });
+        router.patch(route("cart.update", item.variant_id), { quantity }, { preserveScroll: true });
     };
 
     const remove = (item: CartItem) => {
-        router.delete(route("cart.destroy", item.id), { preserveScroll: true });
+        router.delete(route("cart.destroy", item.variant_id), { preserveScroll: true });
     };
 
     return (
@@ -42,7 +44,7 @@ export default function Index({ items, subtotal }: { items: CartItem[]; subtotal
                 <div className="grid gap-8 lg:grid-cols-3">
                     <div className="space-y-4 lg:col-span-2">
                         {items.map((item) => (
-                            <div key={item.id} className="card card-side bg-base-100 shadow-sm">
+                            <div key={item.variant_id} className="card card-side bg-base-100 shadow-sm">
                                 <figure className="w-28 shrink-0 bg-base-200">
                                     {item.image && (
                                         <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
@@ -52,11 +54,14 @@ export default function Index({ items, subtotal }: { items: CartItem[]; subtotal
                                 <div className="card-body flex-row flex-wrap items-center justify-between gap-4">
                                     <div>
                                         <Link
-                                            href={route("products.show", item.slug)}
+                                            href={route("products.show", item.product_slug)}
                                             className="font-semibold hover:text-primary"
                                         >
                                             {item.title}
                                         </Link>
+                                        {item.label !== "Default" && (
+                                            <p className="text-sm text-base-content/70">{item.label}</p>
+                                        )}
                                         <p className="text-sm text-base-content/70">
                                             ${item.price.toFixed(2)} each
                                         </p>
@@ -109,6 +114,7 @@ export default function Index({ items, subtotal }: { items: CartItem[]; subtotal
                                 <span className="font-semibold">${subtotal.toFixed(2)}</span>
                             </div>
 
+                            {errors.quantity && <p className="text-sm text-error">{errors.quantity}</p>}
                             {errors.cart && <p className="text-sm text-error">{errors.cart}</p>}
 
                             <button
