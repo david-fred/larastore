@@ -23,25 +23,21 @@ class EditProduct extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $data['gallery'] = $this->record->images()
+            ->whereNull('product_variation_option_id')
             ->get()
-            ->map(fn ($image) => [
-                'path' => $image->path,
-                'option_key' => $image->product_variation_option_id
-                    ? 'id:' . $image->product_variation_option_id
-                    : null,
-            ])
+            ->map(fn ($image) => ['path' => $image->path])
             ->all();
 
         $data['variation_types'] = $this->record->variationTypes()
-            ->with('options')
+            ->with('options.images')
             ->get()
             ->map(fn ($type) => [
                 'id' => $type->id,
                 'name' => $type->name,
-                'affects_images' => (bool) $type->affects_images,
                 'options' => $type->options->map(fn ($option) => [
                     'id' => $option->id,
                     'name' => $option->name,
+                    'images' => $option->images->pluck('path')->all(),
                 ])->all(),
             ])
             ->all();

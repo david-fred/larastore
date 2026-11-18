@@ -47,7 +47,7 @@ class ProductForm
                 ->default(true),
                    // ->required(),
                 Repeater::make('gallery')
-                    ->label('Product images')
+                    ->label('General images (shown for every variant)')
                     ->schema([
                         FileUpload::make('path')
                             ->label('Image')
@@ -57,63 +57,20 @@ class ProductForm
                             ->disk('public')
                             ->directory('products')
                             ->visibility('public'),
-
-                        Select::make('option_key')
-                            ->label('Show for')
-                            ->placeholder('All variants')
-                            ->options(function (Get $get) {
-                                $groups = [];
-
-                                foreach ($get('/variation_types') ?? [] as $type) {
-                                    if (empty($type['affects_images']) || blank($type['name'] ?? null)) {
-                                        continue;
-                                    }
-
-                                    $options = [];
-
-                                    foreach ($type['options'] ?? [] as $option) {
-                                        if (blank($option['name'] ?? null)) {
-                                            continue;
-                                        }
-
-                                        $name = trim($option['name']);
-
-                                        // Saved options use their ID, new ones use their name until the next save
-                                        $key = ! empty($option['id'])
-                                            ? 'id:' . $option['id']
-                                            : 'new:' . $name;
-
-                                        $options[$key] = $name;
-                                    }
-
-                                    if ($options) {
-                                        $groups[trim($type['name'])] = $options;
-                                    }
-                                }
-
-                                return $groups;
-                            }),
                     ])
-                    ->columns(2)
                     ->reorderable()
                     ->maxItems(10)
                     ->defaultItems(0)
                     ->addActionLabel('Add image')
                     ->columnSpanFull(),
                 Repeater::make('variation_types')
-                    ->label('Variation types (e.g. Color, Size)')
+                    ->label('Variation types (e.g. Color, Storage)')
                     ->schema([
                         Hidden::make('id'),
 
                         TextInput::make('name')
                             ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true),
-                        Toggle::make('affects_images')
-                            ->label('Images change per option')
-                            ->helperText('Turn on for colors. Leave off for storage, sizes, and other options that look the same.')
-                            ->default(false)
-                            ->live(),
+                            ->maxLength(255),
 
                         Repeater::make('options')
                             ->label('Options')
@@ -123,6 +80,19 @@ class ProductForm
                                 TextInput::make('name')
                                     ->required()
                                     ->maxLength(255),
+
+                                FileUpload::make('images')
+                                    ->label('Photos for this option')
+                                    ->helperText('Only for options that change the photo, like colors. Leave empty for storage.')
+                                    ->multiple()
+                                    ->reorderable()
+                                    ->maxFiles(6)
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(4096)
+                                    ->disk('public')
+                                    ->directory('products')
+                                    ->visibility('public')
+                                    ->columnSpanFull(),
                             ])
                             ->defaultItems(1)
                             ->addActionLabel('Add option')

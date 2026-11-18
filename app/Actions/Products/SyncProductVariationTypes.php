@@ -19,7 +19,10 @@ class SyncProductVariationTypes
             $keptOptionIds = [];
 
             foreach (array_values($typeData['options'] ?? []) as $optionOrder => $optionData) {
-                $keptOptionIds[] = $this->saveOption($type, $optionData, $optionOrder)->id;
+                $option = $this->saveOption($type, $optionData, $optionOrder);
+                $keptOptionIds[] = $option->id;
+
+                app(SyncOptionImages::class)->handle($option, $optionData['images'] ?? []);
             }
 
             $type->options()->whereNotIn('id', $keptOptionIds)->get()->each->delete();
@@ -30,11 +33,7 @@ class SyncProductVariationTypes
 
     private function saveType(Product $product, array $data, int $order): ProductVariationType
     {
-        $attributes = [
-            'name' => trim($data['name']),
-            'sort_order' => $order,
-            'affects_images' => (bool) ($data['affects_images'] ?? false),
-        ];
+        $attributes = ['name' => trim($data['name']), 'sort_order' => $order];
 
         $existing = ! empty($data['id'])
             ? $product->variationTypes()->whereKey($data['id'])->first()
