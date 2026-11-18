@@ -11,13 +11,14 @@ class StoreProduct
     public function handle(array $data): Product
     {
         $images = Arr::pull($data, 'images', []);
+        $variationTypes = Arr::pull($data, 'variation_types', []);
 
         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
 
         $product = Product::create($data);
 
         app(SyncProductImages::class)->handle($product, $images);
-
+        app(SyncProductVariationTypes::class)->handle($product, $variationTypes);
         return $product;
     }
 }

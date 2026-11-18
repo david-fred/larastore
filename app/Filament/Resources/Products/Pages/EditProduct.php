@@ -24,6 +24,19 @@ class EditProduct extends EditRecord
     {
         $data['images'] = $this->record->images->pluck('path')->all();
 
+        $data['variation_types'] = $this->record->variationTypes()
+            ->with('options')
+            ->get()
+            ->map(fn ($type) => [
+                'id' => $type->id,
+                'name' => $type->name,
+                'options' => $type->options->map(fn ($option) => [
+                    'id' => $option->id,
+                    'name' => $option->name,
+                ])->all(),
+            ])
+            ->all();
+
         return $data;
     }
 
@@ -36,4 +49,5 @@ class EditProduct extends EditRecord
 
         return $action->handle($record, $data);
     }
+
 }
