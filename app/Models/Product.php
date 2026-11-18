@@ -40,4 +40,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductVariationType::class)->orderBy('sort_order');
     }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
 }

@@ -19,7 +19,7 @@ class UpdateProduct
 
         app(SyncProductImages::class)->handle($product, $images);
         app(SyncProductVariationTypes::class)->handle($product, $variationTypes);
-
+        app(GenerateProductVariants::class)->handle($product);
         return $product;
     }
 }
