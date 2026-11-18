@@ -5,6 +5,7 @@ namespace App\Actions\Orders;
 use App\Models\Order;
 use App\Models\ProductVariant;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -29,6 +30,7 @@ class CreateOrderFromCart
 
             $order = Order::create([
                 'user_id' => $user->id,
+                'reference' => 'LS-' . strtoupper(Str::random(8)),
                 'total' => 0,
             ]);
 

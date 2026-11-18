@@ -26,6 +26,13 @@ class Product extends Model
         ];
     }
 
+    public function getTotalStockAttribute(): int
+    {
+        return $this->variants->isNotEmpty()
+            ? (int) $this->variants->sum('quantity')
+            : (int) $this->quantity;
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

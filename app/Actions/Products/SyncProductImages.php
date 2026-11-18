@@ -7,24 +7,37 @@ use Illuminate\Support\Facades\Storage;
 
 class SyncProductImages
 {
-    public function handle(Product $product, array $paths): void
+    public function handle(Product $product, array $gallery): void
     {
-        $paths = array_values($paths);
+        $items = collect($gallery)
+            ->filter(fn ($item) => ! empty($item['path']))
+            ->values();
 
         // Remove images that were deleted in the form
         $product->images()
-            ->whereNotIn('path', $paths)
+            ->whereNotIn('path', $items->pluck('path')->all())
             ->get()
             ->each(function ($image) {
                 Storage::disk('public')->delete($image->path);
                 $image->delete();
             });
 
-        // Add new uploads and save the order from the form
-        foreach ($paths as $order => $path) {
+        // Match "Show for" names to options across all variation types
+        $options = $product->variationTypes()
+            ->with('options')
+            ->get()
+            ->flatMap(fn ($type) => $type->options)
+            ->keyBy('name');
+
+        foreach ($items as $order => $item) {
+            $optionName = trim((string) ($item['option_name'] ?? ''));
+
             $product->images()->updateOrCreate(
-                ['path' => $path],
-                ['sort_order' => $order],
+                ['path' => $item['path']],
+                [
+                    'sort_order' => $order,
+                    'product_variation_option_id' => $optionName !== '' ? $options->get($optionName)?->id : null,
+                ],
             );
         }
     }

@@ -10,16 +10,18 @@ class StoreProduct
 {
     public function handle(array $data): Product
     {
-        $images = Arr::pull($data, 'images', []);
+        $gallery = Arr::pull($data, 'gallery', []);
         $variationTypes = Arr::pull($data, 'variation_types', []);
 
         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
 
         $product = Product::create($data);
 
-        app(SyncProductImages::class)->handle($product, $images);
+        // Types first, so image tags can match option names
         app(SyncProductVariationTypes::class)->handle($product, $variationTypes);
+        app(SyncProductImages::class)->handle($product, $gallery);
         app(GenerateProductVariants::class)->handle($product);
+
         return $product;
     }
 }

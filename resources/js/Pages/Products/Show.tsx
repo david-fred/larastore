@@ -4,20 +4,9 @@ import MainLayout from "@/Layouts/MainLayout";
 import { PageProps } from "@/types";
 
 type Option = { id: number; name: string };
-
-type VariationType = {
-    id: number;
-    name: string;
-    options: Option[];
-};
-
-type Variant = {
-    id: number;
-    label: string;
-    price: string;
-    quantity: number;
-    option_ids: number[];
-};
+type VariationType = { id: number; name: string; options: Option[] };
+type Variant = { id: number; label: string; price: string; quantity: number; option_ids: number[] };
+type ProductImage = { url: string; option_id: number | null };
 
 type ProductDetail = {
     id: number;
@@ -26,7 +15,8 @@ type ProductDetail = {
     description: string | null;
     price: string;
     category: string;
-    images: string[];
+    categorySlug: string;
+    images: ProductImage[];
     variationTypes: VariationType[];
     variants: Variant[];
 };
@@ -51,7 +41,6 @@ export default function Show({ product }: { product: ProductDetail }) {
 
     const [selectedImage, setSelectedImage] = useState(0);
 
-    // Start on the first variant that's in stock, or the first variant if none are
     const firstAvailable = product.variants.find((v) => v.quantity > 0) ?? product.variants[0];
 
     const [selection, setSelection] = useState<Record<number, number>>(() =>
@@ -67,10 +56,16 @@ export default function Show({ product }: { product: ProductDetail }) {
     );
 
     const inStock = (variant?.quantity ?? 0) > 0;
-    const mainImage = product.images[selectedImage] ?? null;
+
+    // Images tagged with a selected option win, then general images, then everything
+    const tagged = product.images.filter((img) => img.option_id !== null && selectedIds.includes(img.option_id));
+    const general = product.images.filter((img) => img.option_id === null);
+    const gallery = tagged.length > 0 ? tagged : general.length > 0 ? general : product.images;
+    const mainImage = gallery[selectedImage]?.url ?? null;
 
     const choose = (typeId: number, optionId: number) => {
         setSelection((prev) => ({ ...prev, [typeId]: optionId }));
+        setSelectedImage(0);
     };
 
     const addToCart = () => {
@@ -88,7 +83,9 @@ export default function Show({ product }: { product: ProductDetail }) {
                     Shop
                 </Link>
                 <span aria-hidden="true">›</span>
-                <span>{product.category}</span>
+                <Link href={route("categories.show", product.categorySlug)} className="hover:text-primary">
+                    {product.category}
+                </Link>
                 <span aria-hidden="true">›</span>
                 <span className="text-base-content">{product.title}</span>
             </nav>
@@ -105,18 +102,18 @@ export default function Show({ product }: { product: ProductDetail }) {
                         </figure>
                     </div>
 
-                    {product.images.length > 1 && (
+                    {gallery.length > 1 && (
                         <div className="mt-4 flex gap-2 overflow-x-auto">
-                            {product.images.map((src, index) => (
+                            {gallery.map((img, index) => (
                                 <button
-                                    key={src}
+                                    key={img.url}
                                     type="button"
                                     onClick={() => setSelectedImage(index)}
                                     className={`h-20 w-20 shrink-0 overflow-hidden rounded-box border-2 ${
                                         index === selectedImage ? "border-primary" : "border-transparent"
                                     }`}
                                 >
-                                    <img src={src} alt={`${product.title} ${index + 1}`} className="h-full w-full object-cover" />
+                                    <img src={img.url} alt={`${product.title} ${index + 1}`} className="h-full w-full object-cover" />
                                 </button>
                             ))}
                         </div>

@@ -27,7 +27,7 @@ class CheckoutController extends Controller
 
         return Inertia::render('Checkout/Success', [
             'order' => $order ? [
-                'id' => $order->id,
+                'reference' => $order->reference,
                 'status' => $order->status,
                 'total' => $order->total,
             ] : null,

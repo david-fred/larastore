@@ -15,12 +15,12 @@ type PaginatedProducts = {
     links: { url: string | null; label: string; active: boolean }[];
 };
 
-export default function Index({ products }: { products: PaginatedProducts }) {
+export default function Index({ products, category }: { products: PaginatedProducts; category?: string }) {
     return (
         <MainLayout>
             <Head title="Shop" />
 
-            <h1 className="mb-6 text-3xl font-bold">Shop</h1>
+            <h1 className="mb-6 text-3xl font-bold">{category ?? "Shop"}</h1>
 
             {products.data.length === 0 ? (
                 <p>No products yet.</p>

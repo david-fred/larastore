@@ -17,7 +17,7 @@ class ProductsTable
     {
 
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['images', 'category']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['images', 'category', 'variants']))
             ->columns([
                 ImageColumn::make('thumbnail')
                     ->label('Image')
@@ -35,9 +35,8 @@ class ProductsTable
                 TextColumn::make('price')
                     ->money('USD')
                     ->sortable(),
-                TextColumn::make('quantity')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('total_stock')
+                    ->label('Stock'),
                 IconColumn::make('active')
                     ->boolean(),
                 TextColumn::make('created_at')

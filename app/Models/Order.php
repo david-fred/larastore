@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'status', 'total', 'stripe_session_id'];
+    protected $fillable = ['user_id', 'status', 'total', 'stripe_session_id', 'reference'];
 
     protected function casts(): array
     {

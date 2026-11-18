@@ -2,7 +2,7 @@ import { Head, Link } from "@inertiajs/react";
 import MainLayout from "@/Layouts/MainLayout";
 
 type OrderSummary = {
-    id: number;
+    reference: string;
     status: string;
     total: string;
 };
@@ -20,7 +20,7 @@ export default function Success({ order }: { order: OrderSummary | null }) {
 
                     {order ? (
                         <>
-                            <p>Order #{order.id}</p>
+                            <p>Order {order.reference}</p>
                             <p>Total: ${order.total}</p>
                             <div className={`badge ${paid ? "badge-success" : "badge-warning"} w-fit`}>
                                 {paid ? "Paid" : "Confirming payment..."}

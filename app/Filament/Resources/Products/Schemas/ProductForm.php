@@ -8,6 +8,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
 
@@ -45,15 +46,35 @@ class ProductForm
                 Toggle::make('active')
                 ->default(true),
                    // ->required(),
-                FileUpload::make('images')
+                Repeater::make('gallery')
                     ->label('Product images')
-                    ->image()
-                    ->multiple()
+                    ->schema([
+                        FileUpload::make('path')
+                            ->label('Image')
+                            ->required()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(4096)
+                            ->disk('public')
+                            ->directory('products')
+                            ->visibility('public'),
+
+                        Select::make('option_name')
+                            ->label('Show for')
+                            ->placeholder('All variants')
+                            ->options(function (Get $get) {
+                                return collect($get('/variation_types') ?? [])
+                                    ->flatMap(fn ($type) => collect($type['options'] ?? [])->pluck('name'))
+                                    ->filter()
+                                    ->unique()
+                                    ->mapWithKeys(fn ($name) => [$name => $name])
+                                    ->all();
+                            }),
+                    ])
+                    ->columns(2)
                     ->reorderable()
-                    ->maxFiles(6)
-                    ->disk('public')
-                    ->directory('products')
-                    ->visibility('public')
+                    ->maxItems(10)
+                    ->defaultItems(0)
+                    ->addActionLabel('Add image')
                     ->columnSpanFull(),
                 Repeater::make('variation_types')
                     ->label('Variation types (e.g. Color, Size)')

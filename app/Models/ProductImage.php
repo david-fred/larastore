@@ -8,11 +8,16 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
-    protected $fillable = ['product_id', 'path', 'sort_order'];
+    protected $fillable = ['product_id', 'path', 'sort_order', 'product_variation_option_id'];
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function variationOption(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariationOption::class, 'product_variation_option_id');
     }
 
     public function url(): string
