@@ -30,7 +30,11 @@ class SyncProductVariationTypes
 
     private function saveType(Product $product, array $data, int $order): ProductVariationType
     {
-        $attributes = ['name' => trim($data['name']), 'sort_order' => $order];
+        $attributes = [
+            'name' => trim($data['name']),
+            'sort_order' => $order,
+            'affects_images' => (bool) ($data['affects_images'] ?? false),
+        ];
 
         $existing = ! empty($data['id'])
             ? $product->variationTypes()->whereKey($data['id'])->first()

@@ -8,7 +8,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
-use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
 
@@ -58,15 +58,23 @@ class ProductForm
                             ->directory('products')
                             ->visibility('public'),
 
-                        Select::make('option_name')
+                        Select::make('option_id')
                             ->label('Show for')
                             ->placeholder('All variants')
-                            ->options(function (Get $get) {
-                                return collect($get('/variation_types') ?? [])
-                                    ->flatMap(fn ($type) => collect($type['options'] ?? [])->pluck('name'))
-                                    ->filter()
-                                    ->unique()
-                                    ->mapWithKeys(fn ($name) => [$name => $name])
+                            ->options(function (?Model $record) {
+                                if (! $record) {
+                                    return [];
+                                }
+
+                                return $record->variationTypes()
+                                    ->where('affects_images', true)
+                                    ->with('options')
+                                    ->get()
+                                    ->mapWithKeys(fn ($type) => [
+                                        $type->name => $type->options
+                                            ->mapWithKeys(fn ($option) => [$option->id => $option->name])
+                                            ->all(),
+                                    ])
                                     ->all();
                             }),
                     ])
@@ -84,6 +92,10 @@ class ProductForm
                         TextInput::make('name')
                             ->required()
                             ->maxLength(255),
+                        Toggle::make('affects_images')
+                            ->label('Images change per option')
+                            ->helperText('Turn on for colors. Leave off for storage, sizes, and other options that look the same.')
+                            ->default(false),
 
                         Repeater::make('options')
                             ->label('Options')

@@ -8,7 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductVariationType extends Model
 {
-    protected $fillable = ['product_id', 'name', 'sort_order'];
+    protected $fillable = ['product_id', 'name', 'sort_order', 'affects_images'];
+
+    protected function casts(): array
+    {
+        return [
+            'affects_images' => 'boolean',
+        ];
+    }
 
     public function product(): BelongsTo
     {

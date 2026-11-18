@@ -22,21 +22,24 @@ class SyncProductImages
                 $image->delete();
             });
 
-        // Match "Show for" names to options across all variation types
-        $options = $product->variationTypes()
+        // Only accept option IDs that belong to this product
+        $validOptionIds = $product->variationTypes()
+            ->where('affects_images', true)
             ->with('options')
             ->get()
-            ->flatMap(fn ($type) => $type->options)
-            ->keyBy('name');
+            ->flatMap(fn ($type) => $type->options->pluck('id'))
+            ->all();
 
         foreach ($items as $order => $item) {
-            $optionName = trim((string) ($item['option_name'] ?? ''));
+            $optionId = isset($item['option_id']) && in_array((int) $item['option_id'], $validOptionIds, true)
+                ? (int) $item['option_id']
+                : null;
 
             $product->images()->updateOrCreate(
                 ['path' => $item['path']],
                 [
                     'sort_order' => $order,
-                    'product_variation_option_id' => $optionName !== '' ? $options->get($optionName)?->id : null,
+                    'product_variation_option_id' => $optionId,
                 ],
             );
         }
