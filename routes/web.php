@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,6 +39,8 @@ Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart
 
 Route::middleware('auth')->post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::middleware('auth')->get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('webhooks.stripe');
 
 //Route::middleware(['auth', 'role:admin'])->get('/admin-check', fn () => 'Welcome, admin');
 
