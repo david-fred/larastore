@@ -35,7 +35,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
                 'roles' => $request->user()?->getRoleNames() ?? [],
             ],
-                'cartCount' => array_sum(session('cart', [])),
+            'cartCount' => fn () => array_sum(session('cart', [])),
         ];
     }
 }
