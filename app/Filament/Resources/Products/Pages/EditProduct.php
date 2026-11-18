@@ -26,7 +26,9 @@ class EditProduct extends EditRecord
             ->get()
             ->map(fn ($image) => [
                 'path' => $image->path,
-                'option_id' => $image->product_variation_option_id,
+                'option_key' => $image->product_variation_option_id
+                    ? 'id:' . $image->product_variation_option_id
+                    : null,
             ])
             ->all();
 

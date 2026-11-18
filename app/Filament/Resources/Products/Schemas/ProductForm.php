@@ -8,7 +8,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
 
@@ -58,24 +58,40 @@ class ProductForm
                             ->directory('products')
                             ->visibility('public'),
 
-                        Select::make('option_id')
+                        Select::make('option_key')
                             ->label('Show for')
                             ->placeholder('All variants')
-                            ->options(function (?Model $record) {
-                                if (! $record) {
-                                    return [];
+                            ->options(function (Get $get) {
+                                $groups = [];
+
+                                foreach ($get('/variation_types') ?? [] as $type) {
+                                    if (empty($type['affects_images']) || blank($type['name'] ?? null)) {
+                                        continue;
+                                    }
+
+                                    $options = [];
+
+                                    foreach ($type['options'] ?? [] as $option) {
+                                        if (blank($option['name'] ?? null)) {
+                                            continue;
+                                        }
+
+                                        $name = trim($option['name']);
+
+                                        // Saved options use their ID, new ones use their name until the next save
+                                        $key = ! empty($option['id'])
+                                            ? 'id:' . $option['id']
+                                            : 'new:' . $name;
+
+                                        $options[$key] = $name;
+                                    }
+
+                                    if ($options) {
+                                        $groups[trim($type['name'])] = $options;
+                                    }
                                 }
 
-                                return $record->variationTypes()
-                                    ->where('affects_images', true)
-                                    ->with('options')
-                                    ->get()
-                                    ->mapWithKeys(fn ($type) => [
-                                        $type->name => $type->options
-                                            ->mapWithKeys(fn ($option) => [$option->id => $option->name])
-                                            ->all(),
-                                    ])
-                                    ->all();
+                                return $groups;
                             }),
                     ])
                     ->columns(2)
@@ -91,11 +107,13 @@ class ProductForm
 
                         TextInput::make('name')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->live(onBlur: true),
                         Toggle::make('affects_images')
                             ->label('Images change per option')
                             ->helperText('Turn on for colors. Leave off for storage, sizes, and other options that look the same.')
-                            ->default(false),
+                            ->default(false)
+                            ->live(),
 
                         Repeater::make('options')
                             ->label('Options')
