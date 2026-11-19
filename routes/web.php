@@ -19,10 +19,15 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return request()->user()->hasRole('admin')
-        ? redirect('/admin')
-        : redirect()->route('products.index');
+Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
+    $target = $request->user()->hasRole('admin') ? '/admin' : route('products.index');
+
+    // Inertia requests (like the login form) need a full-page visit to a non-Inertia page
+    if ($request->header('X-Inertia')) {
+        return Inertia::location($target);
+    }
+
+    return redirect($target);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
