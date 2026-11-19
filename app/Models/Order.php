@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
+    public const PAID_STATUSES = ['paid', 'partially_refunded', 'refunded'];
+
     // Statuses that mean the customer paid, including orders refunded later
     protected $fillable = ['user_id',
         'reference',
