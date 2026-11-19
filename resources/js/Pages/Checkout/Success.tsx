@@ -1,4 +1,5 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
+import { useEffect } from "react";
 import MainLayout from "@/Layouts/MainLayout";
 
 type OrderSummary = {
@@ -9,6 +10,27 @@ type OrderSummary = {
 
 export default function Success({ order }: { order: OrderSummary | null }) {
     const paid = order?.status === "paid";
+
+    useEffect(() => {
+        if (!order || paid) {
+            return;
+        }
+
+        // The webhook marks the order paid a few seconds after checkout, so check for an update
+        let attempts = 0;
+        const timer = window.setInterval(() => {
+            attempts++;
+
+            if (attempts > 15) {
+                window.clearInterval(timer);
+                return;
+            }
+
+            router.reload({ only: ["order"] });
+        }, 2000);
+
+        return () => window.clearInterval(timer);
+    }, [order?.status]);
 
     return (
         <MainLayout>
@@ -27,7 +49,7 @@ export default function Success({ order }: { order: OrderSummary | null }) {
                             </div>
                             {!paid && (
                                 <p className="text-sm text-base-content/70">
-                                    Payment confirmation can take a few seconds. Refresh this page to check again.
+                                    This page updates automatically. It can take up to a minute.
                                 </p>
                             )}
                         </>

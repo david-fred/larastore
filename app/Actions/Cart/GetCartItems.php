@@ -34,7 +34,7 @@ class GetCartItems
                 'price' => $price,
                 'quantity' => $quantity,
                 'stock' => $variant->quantity,
-                'image' => $variant->product->images->first()?->url(),
+                'image' => $variant->image_url,
                 'line_total' => round($price * $quantity, 2),
             ];
         })->values();

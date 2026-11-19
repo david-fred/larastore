@@ -71,7 +71,7 @@ class ProductController extends Controller
             'slug' => $product->slug,
             'price' => $product->price,
             'category' => $product->category->name,
-            'image' => $product->images->first()?->url(),
+            'image' => $product->images->first(fn ($image) => $image->product_variation_option_id === null)?->url(),
         ]);
     }
 }

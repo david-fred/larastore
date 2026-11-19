@@ -60,7 +60,7 @@ export default function Show({ product }: { product: ProductDetail }) {
     // Images tagged with a selected option win, then general images, then everything
     const tagged = product.images.filter((img) => img.option_id !== null && selectedIds.includes(img.option_id));
     const general = product.images.filter((img) => img.option_id === null);
-    const gallery = tagged.length > 0 ? tagged : general.length > 0 ? general : product.images;
+    const gallery = tagged.length > 0 ? tagged : general;
     const mainImage = gallery[selectedImage]?.url ?? null;
 
     const choose = (typeId: number, optionId: number) => {

@@ -53,4 +53,18 @@ class ProductVariant extends Model
             ? $this->product->title
             : "{$this->product->title} ({$this->label})";
     }
+
+    // The photo for this variant: one tagged to a chosen option, else a general photo
+    public function getImageUrlAttribute(): ?string
+    {
+        $this->loadMissing(['options', 'product.images']);
+
+        $optionIds = $this->options->pluck('id');
+        $images = $this->product->images;
+
+        $tagged = $images->first(fn ($image) => $optionIds->contains($image->product_variation_option_id));
+        $general = $images->first(fn ($image) => $image->product_variation_option_id === null);
+
+        return ($tagged ?? $general)?->url();
+    }
 }

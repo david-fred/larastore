@@ -2,9 +2,11 @@
 
 namespace App\Actions\Orders;
 
+use App\Mail\OrderConfirmation;
 use App\Models\Order;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class HandleStripeCheckoutCompleted
 {
@@ -16,12 +18,13 @@ class HandleStripeCheckoutCompleted
             return; // Not one of our orders, e.g. a test event from the Stripe CLI
         }
 
-        DB::transaction(function () use ($order) {
+        // Returns the order only when this call is the one that marked it paid
+        $justPaid = DB::transaction(function () use ($order) {
             // Webhooks can be retried, so only process an order once
             $order = Order::whereKey($order->id)->lockForUpdate()->first();
 
             if ($order->status === 'paid') {
-                return;
+                return null;
             }
 
             $order->update(['status' => 'paid']);
@@ -37,6 +40,13 @@ class HandleStripeCheckoutCompleted
                     $variant->decrement('quantity', min($item->quantity, $variant->quantity));
                 }
             }
+
+            return $order;
         });
+
+        // Sent after the commit, so the queued job always sees the paid order
+        if ($justPaid) {
+            Mail::to($justPaid->user)->queue(new OrderConfirmation($justPaid));
+        }
     }
 }
