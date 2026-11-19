@@ -9,8 +9,9 @@ class FindCustomerOrder
 {
     public function handle(User $user, string $reference): Order
     {
-        // Scoped to the logged-in user, so other customers' orders return a 404
-        return Order::where('reference', $reference)
+        // Starts from this user's orders, so another customer's order can never match
+        return $user->orders()
+            ->where('reference', $reference)
             ->whereIn('status', Order::PAID_STATUSES)
             ->with('items')
             ->firstOrFail();
