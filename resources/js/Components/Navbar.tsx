@@ -6,7 +6,7 @@ export default function Navbar() {
 
     return (
         <div className="navbar bg-base-100 shadow-sm">
-            <div className="navbar-start">
+            <div className="navbar-start gap-2">
                 <Link href="/" className="btn btn-ghost text-xl">
                     Larastore
                 </Link>
@@ -14,7 +14,6 @@ export default function Navbar() {
                     Shop
                 </Link>
             </div>
-
             <div className="navbar-end gap-2">
                 <Link href={route("cart.index")} className="btn btn-ghost btn-sm">
                     Cart ({cartCount})
