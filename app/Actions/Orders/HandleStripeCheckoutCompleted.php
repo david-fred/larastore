@@ -27,7 +27,11 @@ class HandleStripeCheckoutCompleted
                 return null;
             }
 
-            $order->update(['status' => 'paid', 'paid_at' => now()]);
+            $order->update([
+                'status' => 'paid',
+                'paid_at' => now(),
+                'stripe_payment_intent_id' => $session['payment_intent'] ?? null,
+            ]);
 
             foreach ($order->items as $item) {
                 if (! $item->product_variant_id) {

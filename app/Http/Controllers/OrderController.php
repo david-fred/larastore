@@ -45,13 +45,14 @@ class OrderController extends Controller
                     'quantity' => $item->quantity,
                     'line_total' => round((float) $item->price * $item->quantity, 2),
                 ])->values(),
+                'refunded' => $order->refundedTotal(),
             ],
         ]);
     }
 
     private function paidAt(Order $order): ?CarbonInterface
     {
-        if ($order->status !== 'paid') {
+        if (! in_array($order->status, Order::PAID_STATUSES, true)) {
             return null;
         }
 

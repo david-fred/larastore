@@ -16,6 +16,7 @@ type OrderDetail = {
     placed_at: string;
     paid_at: string | null;
     items: OrderItem[];
+    refunded: number;
 };
 
 export default function Show({ order }: { order: OrderDetail }) {
@@ -84,6 +85,12 @@ export default function Show({ order }: { order: OrderDetail }) {
                             <span>Total paid</span>
                             <span className="font-semibold">${order.total}</span>
                         </div>
+                        {order.refunded > 0 && (
+                            <div className="flex justify-between text-error">
+                                <span>Refunded</span>
+                                <span className="font-semibold">-${order.refunded.toFixed(2)}</span>
+                            </div>
+                        )}
                         <Link href={route("orders.index")} className="btn btn-outline btn-sm mt-4">
                             Back to my orders
                         </Link>

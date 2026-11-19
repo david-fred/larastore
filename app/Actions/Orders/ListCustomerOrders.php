@@ -11,7 +11,7 @@ class ListCustomerOrders
     public function handle(User $user, int $perPage = 10): LengthAwarePaginator
     {
         return Order::where('user_id', $user->id)
-            ->where('status', 'paid')
+            ->whereIn('status', Order::PAID_STATUSES)
             ->with('items')
             ->latest()
             ->paginate($perPage)

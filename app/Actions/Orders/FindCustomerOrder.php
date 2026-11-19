@@ -11,7 +11,7 @@ class FindCustomerOrder
     {
         // Scoped to the logged-in user, so other customers' orders return a 404
         return Order::where('reference', $reference)
-            ->where('user_id', $user->id)
+            ->whereIn('status', Order::PAID_STATUSES)
             ->with('items')
             ->firstOrFail();
     }
