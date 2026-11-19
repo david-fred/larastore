@@ -57,6 +57,12 @@ export default function Success({ order }: { order: OrderSummary | null }) {
                         <p>We couldn't find that order. If you were charged, contact support.</p>
                     )}
 
+                    {paid && (
+                        <Link href={route("orders.show", order.reference)} className="btn btn-outline btn-sm w-fit">
+                            View order
+                        </Link>
+                    )}
+
                     <Link href={route("products.index")} className="btn btn-primary btn-sm w-fit">
                         Keep shopping
                     </Link>

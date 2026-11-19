@@ -15,6 +15,12 @@ export default function Navbar() {
                 </Link>
             </div>
             <div className="navbar-end gap-2">
+                {auth.user && (
+                    <Link href={route("orders.index")} className="btn btn-ghost btn-sm">
+                        Orders
+                    </Link>
+                )}
+
                 <Link href={route("cart.index")} className="btn btn-ghost btn-sm">
                     Cart ({cartCount})
                 </Link>

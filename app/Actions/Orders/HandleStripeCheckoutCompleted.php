@@ -27,7 +27,7 @@ class HandleStripeCheckoutCompleted
                 return null;
             }
 
-            $order->update(['status' => 'paid']);
+            $order->update(['status' => 'paid', 'paid_at' => now()]);
 
             foreach ($order->items as $item) {
                 if (! $item->product_variant_id) {

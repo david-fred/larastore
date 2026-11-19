@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -47,6 +48,11 @@ Route::delete('/cart/{variant}', [CartController::class, 'destroy'])->name('cart
 
 Route::middleware('auth')->post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::middleware('auth')->get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{reference}', [OrderController::class, 'show'])->name('orders.show');
+});
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('webhooks.stripe');
 
