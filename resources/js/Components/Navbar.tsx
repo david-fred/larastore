@@ -16,6 +16,11 @@ export default function Navbar() {
             </div>
             <div className="navbar-end gap-2">
                 {auth.user && (
+                    <Link href={route("vendor.apply")} className="btn btn-ghost btn-sm">
+                        Sell
+                    </Link>
+                )}
+                {auth.user && (
                     <Link href={route("orders.index")} className="btn btn-ghost btn-sm">
                         Orders
                     </Link>
