@@ -56,8 +56,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/vendor/apply', [VendorApplicationController::class, 'create'])->name('vendor.apply');
-    Route::post('/vendor/apply', [VendorApplicationController::class, 'store'])->name('vendor.apply.store');
+    Route::get('/sell', [VendorApplicationController::class, 'create'])->name('vendor.apply');
+    Route::post('/sell', [VendorApplicationController::class, 'store'])->name('vendor.apply.store');
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('webhooks.stripe');

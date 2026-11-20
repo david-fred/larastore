@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+
 class Product extends Model
 {
     protected $fillable = [
@@ -16,6 +17,7 @@ class Product extends Model
         'price',
         'quantity',
         'active',
+        'vendor_id',
     ];
 
     protected function casts(): array
@@ -51,5 +53,10 @@ class Product extends Model
     public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
     }
 }

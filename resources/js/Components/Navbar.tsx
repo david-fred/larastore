@@ -30,6 +30,12 @@ export default function Navbar() {
                     Cart ({cartCount})
                 </Link>
 
+                {auth.roles.includes("vendor") && (
+                    <a href="/vendor" className="btn btn-ghost btn-sm">
+                        Seller
+                    </a>
+                )}
+
                 {auth.roles.includes("admin") && (
                     <a href="/admin" className="btn btn-ghost btn-sm">
                         Admin

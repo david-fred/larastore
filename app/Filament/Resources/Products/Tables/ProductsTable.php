@@ -17,7 +17,7 @@ class ProductsTable
     {
 
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['images', 'category', 'variants']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['images', 'category', 'variants', 'vendor',]))
             ->columns([
                 ImageColumn::make('thumbnail')
                     ->label('Image')
@@ -26,6 +26,10 @@ class ProductsTable
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('vendor.store_name')
+                    ->label('Vendor')
+                    ->placeholder('Platform')
+                    ->searchable(),
                 TextColumn::make('category.name')
                     ->label('Category')
                     ->searchable()

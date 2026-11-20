@@ -23,6 +23,13 @@ class ProductForm
                     ->required()
                     ->searchable()
                     ->preload(),
+                Select::make('vendor_id')
+                    ->label('Vendor')
+                    ->relationship('vendor', 'store_name')
+                    ->placeholder('Platform (no vendor)')
+                    ->nullable()
+                    ->visible(fn () => auth()->user()?->hasRole('admin'))
+                    ->dehydrated(fn () => auth()->user()?->hasRole('admin')),
                 TextInput::make('title')
                     ->required()
                 ->maxLength(255),
